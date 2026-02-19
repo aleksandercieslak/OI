@@ -1,0 +1,10 @@
+*.out
+*.exe
+a.out
+.DS_Store
+.vscode/
+.idea/
+*.tmp
+*.swp
+*.in
+*.ans
