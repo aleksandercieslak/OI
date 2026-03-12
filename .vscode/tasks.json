@@ -12,7 +12,7 @@
                 "-g",
                 "${file}",
                 "-o",
-                "${fileDirname}/${fileBasenameNoExtension}"
+                "${fileDirname}/../executables/${fileBasenameNoExtension}"
             ],
             "group": {
                 "kind": "build",
