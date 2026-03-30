@@ -24,9 +24,9 @@ void solve() {
         int x;
         int y;
         int numberOfSteps;
-        vector<int> steps;
     };
     vector<Info> cow(numberOfCows);
+    vector<tuple<int, int, int>> steps;
     for (int i = 0; i < numberOfCows; i++) {
         cin >> cow[i].direction >> cow[i].x >> cow[i].y;
     }
@@ -36,14 +36,14 @@ void solve() {
                 if (cow[i].direction == 'N') { 
                     if (cow[i].y < cow[j].y && cow[i].x > cow[j].x) {
                          if (abs(cow[j].x - cow[i].x) < abs(cow[i].y - cow[j].y)) {
-                            cow[i].steps.push_back(cow[j].y - cow[i].y);
+                            steps.push_back({cow[j].y - cow[i].y, i, j});
                         }
                     }
                 }
                 else if (cow[i].direction == 'E') {
                     if (cow[i].x < cow[j].x && cow[i].y > cow[j].y) {
                         if (abs(cow[j].x - cow[i].x) > abs(cow[i].y - cow[j].y)) {
-                            cow[i].steps.push_back(cow[j].x - cow[i].x);
+                            steps.push_back({cow[j].x - cow[i].x, i, j});
                         }
                     }
                 }
@@ -51,22 +51,33 @@ void solve() {
             else if (cow[i].direction == cow[j].direction) {
                 if (cow[i].direction == 'N') {
                     if (cow[i].x == cow[j].x && cow[i].y < cow[j].y) {
-                        cow[i].steps.push_back(cow[j].y - cow[i].y);
+                        steps.push_back({cow[j].y - cow[i].y, i, j});
                     }
                 }
                 if (cow[i].direction == 'E') {
                     if (cow[i].y == cow[j].y && cow[i].x < cow[j].x) {
-                        cow[i].steps.push_back(cow[j].x - cow[i].x);
+                        steps.push_back({cow[j].x - cow[i].x, i, j});
                     }
                 }
             }
         }
     }
-    for (int i = 0; i < numberOfCows; i++) {
-        if (cow[i].steps.empty()) {
+    sort(steps.begin(), steps.end(), [](const tuple<int, int, int>& a, const tuple<int, int, int>& b) { return get<0>(a) < get<0>(b); });
+    vector<int> stuckCows;
+    vector<int> answers (numberOfCows);
+    for (const auto& a : steps) {
+        if (count(stuckCows.begin(), stuckCows.end(), get<2>(a)) == 0 && count(stuckCows.begin(), stuckCows.end(), get<1>(a)) == 0) {
+            answers[get<1>(a)] = get<0>(a);
+            stuckCows.push_back(get<1>(a));
+        }
+    }
+    for (const auto& a : answers) {
+        if (a == 0) {
             cout << "Infinity\n";
         }
-        else { cout << *min_element(cow[i].steps.begin(), cow[i].steps.end()) << "\n"; }
+        else {
+            cout << a <<"\n";
+        }
     }
 }
 
