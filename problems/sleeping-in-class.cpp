@@ -47,7 +47,7 @@ void solve() {
             for (auto& a : divisors) {
                 int numberOfOperations { 0 };
                 vector<int> temporary = numbers;
-                for (int i = 0; i < static_cast<int>(temporary.size()); i++) {
+                for (int i = 0; i < temporary.size(); i++) {
                     while (temporary[i] < a) {
                         modify(temporary, i);
                         numberOfOperations++;
