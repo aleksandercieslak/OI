@@ -113,12 +113,15 @@ void solve() {
         cin >> logos[i].first >> logos[i].second;
     }
     search(0);
-    cout << answer << "\n";
-    for (int i = 0; i < static_cast<int>(board.size()); i++) {
-        for (int j = 0; j < static_cast<int>(board.size()); j++) {
-            cout << board[i][j];
+    if (answer == 0) { cout << -1 << "\n"; }
+    else {
+        cout << answer << "\n";
+        for (int i = 0; i < static_cast<int>(board.size()); i++) {
+            for (int j = 0; j < static_cast<int>(board.size()); j++) {
+                cout << board[i][j];
+            }
+            cout << "\n";
         }
-        cout << "\n";
     }
 }
 int main() {
