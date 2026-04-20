@@ -17,16 +17,15 @@ const ll  LINF = 1e18;
 const int MOD  = 1e9+7;
 
 string findWord(vector<pair<string, string>>& container, string type) {
-    for (auto& a : container) {
-        if (a.second == type) {
-            auto iterator = find(container.begin(), container.end(), a);
-            container.erase(iterator);
-            return a.first;
+    for (auto it = container.begin(); it != container.end(); it++) {
+        if (it->second == type) {
+            string word = it->first;
+            container.erase(it);
+            return word;
         }
     }
     return "";
 }
-
 
 void solve() {
     int numberOfInstances { 0 };
@@ -60,7 +59,7 @@ void solve() {
         }
         for (int i = 0; i <= min(nouns, intransitiveVerbs); i++) {
             for (int j = 0; j <= min(nouns-i, transitiveVerbs); j++) {
-                for (int k = 0; k <= min(nouns-i-j, numberOfCommas); k++) {
+                for (int k = 0; k <= min(nouns-i-2*j, numberOfCommas); k++) {
                     if (j > 0) {
                         int newNouns = i+2*j+k;
                         int newIntransitiveVerbs = i;
@@ -110,9 +109,45 @@ void solve() {
                                         sentence += ". ";
                                     }
                                 }
-                                sentence.pop_back();
+                                if (!sentence.empty()) { sentence.pop_back(); }
                             }
                         }
+                    }
+                    else if (j == 0) {
+                        int newNouns = i;
+                        int newIntransitiveVerbs = i;
+                        int newConjunctions = min(conjunctions, i/2);
+                        int newPeriods = i - newConjunctions;
+                        if (newPeriods <= numberOfPeriods) {
+                            answer = max(answer, newNouns+newIntransitiveVerbs+newConjunctions);
+                            if (answer == newNouns+newIntransitiveVerbs+newConjunctions) {
+                                sentence = "";
+                                vector<string> sentences (i);
+                                vector<pair<string, string>> temporary = words;
+                                for (int l = 0; l < i; l++) {
+                                    sentences[l] += findWord(temporary, "noun");
+                                    sentences[l] += " ";
+                                    sentences[l] += findWord(temporary, "intransitive-verb");
+                                }
+                                for (int l = 0; l < i; l++) {
+                                    if (newConjunctions > 0) {
+                                        sentence += sentences[l];
+                                        sentence += " ";
+                                        sentence += findWord(temporary, "conjunction");
+                                        sentence += " ";
+                                        sentence += sentences[l+1];
+                                        sentence += ". ";
+                                        l++;
+                                        newConjunctions--;
+                                    }
+                                    else {
+                                        sentence += sentences[l];
+                                        sentence += ". ";
+                                    }
+                                }
+                                if (!sentence.empty()) { sentence.pop_back(); }
+                            }
+                        }                
                     }
                 }
             }
