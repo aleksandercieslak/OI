@@ -44,14 +44,14 @@ void findOrder (int k, vector<int> cards, int& answer) {
     }
 }
 
-void findOperators (int index, vector<char> operators, vector<int> cards, int& answer) {
+void findOperators (vector<char> operators, vector<int> cards, int& answer) {
     if (subsetOperators.size() == 3) {
         findOrder(0, cards, answer);
     }
     else {
         for (int i = 0; i < 4; i++) {
             subsetOperators.push_back(operators[i]);
-            findOperators(index + 1, operators, cards, answer);
+            findOperators(operators, cards, answer);
             subsetOperators.pop_back();
         }
     }
