@@ -18,11 +18,11 @@ void solve() {
     if (truckXTop > firstXBottom && truckYTop > firstYBottom && truckXBottom < firstXTop && truckYBottom < firstYTop) {
         int topPoint { min(firstYTop, truckYTop) };
         int bottomPoint { max(firstYBottom, truckYBottom) };
-        int verticalSide { topPoint-bottomPoint };
+        int verticalSide { abs(topPoint-bottomPoint) };
 
         int rightPoint { min(firstXTop, truckXTop) };
         int leftPoint { max(firstXBottom, truckXBottom) };
-        int horizontalSide { rightPoint-leftPoint };
+        int horizontalSide { abs(rightPoint-leftPoint) };
 
         firstObfuscatedArea = verticalSide*horizontalSide;
     }
@@ -30,11 +30,11 @@ void solve() {
     if (truckXTop > secondXBottom && truckYTop > secondYBottom && truckXBottom < secondXTop && truckYBottom < secondYTop) {
         int topPoint { min(secondYTop, truckYTop) };
         int bottomPoint { max(secondYBottom, truckYBottom) };
-        int verticalSide { topPoint-bottomPoint };
+        int verticalSide { abs(topPoint-bottomPoint) };
 
         int rightPoint { min(secondXTop, truckXTop) };
         int leftPoint { max(secondXBottom, truckXBottom) };
-        int horizontalSide { rightPoint-leftPoint };
+        int horizontalSide { abs(rightPoint-leftPoint) };
 
         secondObfuscatedArea = verticalSide*horizontalSide;
     }
