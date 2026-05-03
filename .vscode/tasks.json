@@ -12,7 +12,7 @@
                 "-g",
                 "${file}",
                 "-o",
-                "${fileDirname}/../executables/${fileBasenameNoExtension}"
+                "/tmp/${fileBasenameNoExtension}"
             ],
             "group": {
                 "kind": "build",
@@ -31,7 +31,7 @@
                 "-g",
                 "${file}",
                 "-o",
-                "${fileDirname}/${fileBasenameNoExtension}"
+                "/tmp/${fileBasenameNoExtension}"
             ],
             "options": {
                 "cwd": "${fileDirname}"
@@ -47,3 +47,4 @@
         }
     ]
 }
+
