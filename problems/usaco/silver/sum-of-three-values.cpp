@@ -38,9 +38,11 @@ void solve() {
             }
             else if (numbers[i] + numbers[j] + numbers[k] < x) {
                 i++;
+                if (k == i) { i++; }
             }
             else if (numbers[i] + numbers[j] + numbers[k] > x) {
                 j--;
+                if (k == j) { j--; }
             }
         }
         if (found) { break; }
