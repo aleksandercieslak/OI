@@ -29,12 +29,12 @@ void solve() {
         }
         prefix[a.first] = temp;
     }
-    int answer { 0 };
+    long long answer { 0 };
     for (int i = 0; i < numberOfCows; i++) {
         int species { order[i] };
         if (distances.count(species) == 0) { continue; }
         int distanceToEdge { min(i+1, numberOfCows-i) };
-        int index { upper_bound(distances[species].begin(), distances[species].end(), distanceToEdge) - distances[species].begin() };
+        int index { static_cast<int>(upper_bound(distances[species].begin(), distances[species].end(), distanceToEdge) - distances[species].begin()) };
         answer += prefix[species][index];
         answer += (distances[species].size()-index) * distanceToEdge;
 

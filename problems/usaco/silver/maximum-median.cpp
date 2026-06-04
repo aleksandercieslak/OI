@@ -13,16 +13,16 @@ void solve() {
     int current { length/2 };
     int members { 1 };
     int median { numbers[current] };
-    while (operations >= (numbers[current+1]-numbers[current])*members && current < length) {
-        while (numbers[current] == numbers[current+1]) {
+    while (current+1 < length && operations >= (numbers[current+1]-numbers[current])*members) {
+        while (current+1 < length && numbers[current] == numbers[current+1]) {
             current++;
             members++;
         }
         if (current >= length-1) { median += operations/members; break; }
         median = numbers[current+1];
+        operations -= (numbers[current+1]-numbers[current])*members;
         current++;
         members++;
-        operations -= (numbers[current+1]-numbers[current])*members;
     }
     cout << median << "\n";
 }
