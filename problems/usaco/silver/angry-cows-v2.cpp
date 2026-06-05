@@ -1,62 +1,55 @@
 #include <bits/stdc++.h>
 using namespace std;
 
-bool isPossible(vector<int> haybales, int radius) {
-    int size { static_cast<int>(haybales.size()) };
-    bool ret { false };
-    for (int start = 0; start < size; start++) {
-        int currentLeft { start };
-        int currentRight { start };
-        bool failure { false };
-        while ((currentLeft > 0 || currentRight < size-1) && failure == false) {
-            if (haybales[currentLeft-1] < haybales[currentLeft]-radius || haybales[currentRight+1] > haybales[currentRight]+radius) {
-                failure = true;
-                break;
+bool isPossible(const vector<int>& haybales, int radius, int position, char direction) {
+    if (direction == 'L') {
+        int ogPosition { position };
+        if (haybales[upper_bound(haybales.begin(), haybales.end(), position) - haybales.begin() - 1] < position - radius) { return false; }
+        else {
+            position = upper_bound(haybales.begin(), haybales.end(), position) - haybales.begin() - 1;
+            while (haybales[position-1] >= haybales[ogPosition]-radius) {
+                position--;
             }
-            int left { 0 };
-            int right { size-1 };
-            if (currentLeft-radius >= 0) {
-                left = currentLeft-radius;
-            }
-            if (currentRight+radius < size) {
-                right = currentRight+radius;
-            }
-            int tempRight { currentLeft };
-            while (left <= tempRight) {
-                if (currentLeft == 0) { break; }
-                int middle { (left+tempRight)/2+1 };
-                if (haybales[middle] > haybales[currentRight]-radius) {
-                    tempRight = middle;
-                }
-                else if (haybales[middle] < haybales[currentRight]-radius) {
-                    left = middle+1;
-                }
-                else {
-                    currentLeft = middle;
-                    break;
-                }
-            }
-            int tempLeft { currentRight };
-            while (tempLeft <= right) {
-                if (currentRight == 0) { break; }
-                int middle { (tempLeft+right)/2+1 };
-                if (haybales[middle] > haybales[currentLeft]+radius) {
-                    right = middle-1;
-                }
-                else if (haybales[middle] < haybales[currentLeft]+radius) {
-                    tempLeft = middle;
-                }
-                else {
-                    currentRight = middle;
-                    break;
-                }
-            }
-            radius++;
+            radius -= 2;
         }
-        if (!failure) { ret = true; }
+        while (position > 0) {
+            int index { position };
+            while (haybales[index-1] >= haybales[position]-radius) {
+                index--;
+                if (index == 0) { break; }
+            }
+            if (index == position) { return false; }
+            position = index;
+            radius -= 2;
+            if (position == 0) { return true; }
+            if (radius <= 0) { return false; }
+        }
     }
-    if (ret) { return true; }
-    return false;
+    else {
+        int ogPosition { position };
+        if (haybales[lower_bound(haybales.begin(), haybales.end(), position) - haybales.begin()] > position + radius) { return false; }
+        else {
+            position = lower_bound(haybales.begin(), haybales.end(), position) - haybales.begin();
+            while (haybales[position+1] <= haybales[ogPosition]+radius) {
+                position++;
+            }
+            radius -= 2;
+        }
+        int size { static_cast<int>(haybales.size()) };
+        while (position < size-1) {
+            int index { position };
+            while (haybales[index+1] <= haybales[position]+radius) {
+                index++;
+                if (index == size-1) { break; }
+            }
+            if (index == position) { return false; }
+            position = index;
+            radius -= 2;
+            if (position == size-1) { return true; }
+            if (radius <= 0) { return false; }
+        }
+    }
+    return true;
 }
 
 void solve() {
@@ -66,19 +59,42 @@ void solve() {
     for (int i = 0; i < numberOfHaybales; i++) {
         cin >> haybales[i];
     }
+    int haybalesSize { static_cast<int>(haybales.size()) };
     sort(haybales.begin(), haybales.end());
-    int l { 0 };
-    int r { static_cast<int>(haybales.size())-1 };
-    while (l <= r) {
-        int mid { (l+r)/2 };
-        if (isPossible(haybales, mid)) {
-            r = mid;
+    for (int i = 0; i < haybalesSize; i++) {
+        haybales[i] *= 2;
+    }
+    int biggest { *max_element(haybales.begin(), haybales.end()) };
+    int smallest { *min_element(haybales.begin(), haybales.end()) };
+    int leftR { smallest };
+    int rightR { biggest };
+    int answer { rightR };
+    while (leftR <= rightR) {
+        int middleR { (leftR+rightR)/2 };
+        int leftPos { smallest };
+        int rightPos { biggest };
+        bool radiusIsValid { false };
+        int bestPos { 0 };
+        while (leftPos <= rightPos) {
+            int middlePos { (leftPos+rightPos)/2 };
+            if (isPossible(haybales, middleR, middlePos, 'L')) {
+                bestPos = max(bestPos, leftPos);
+                leftPos = middlePos+1;
+            }
+            else {
+                rightPos = middlePos-1;
+            }
+        }
+        if (bestPos >= 0 && isPossible(haybales, middleR, bestPos, 'L') && isPossible(haybales, middleR, bestPos, 'R')) { radiusIsValid = true; }
+        if (radiusIsValid) {
+            answer = min(answer, middleR);
+            rightR = middleR-1;
         }
         else {
-            l = mid+1;
+            leftR = middleR+1;
         }
     }
-    cout << l << "\n";
+    cout << fixed << setprecision(1) << static_cast<double>(answer)/2 << "\n";
 }
 
 int main() {
