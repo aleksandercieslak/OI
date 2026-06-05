@@ -74,17 +74,16 @@ void solve() {
         int leftPos { smallest };
         int rightPos { biggest };
         bool radiusIsValid { false };
-        int bestPos { 0 };
         while (leftPos <= rightPos) {
             int middlePos { (leftPos+rightPos)/2 };
             if (isPossible(haybales, middleR, middlePos, 'L')) {
-                bestPos = max(bestPos, leftPos);
                 leftPos = middlePos+1;
             }
             else {
                 rightPos = middlePos-1;
             }
         }
+        int bestPos { leftPos-1 };
         if (bestPos >= 0 && isPossible(haybales, middleR, bestPos, 'L') && isPossible(haybales, middleR, bestPos, 'R')) { radiusIsValid = true; }
         if (radiusIsValid) {
             answer = min(answer, middleR);
