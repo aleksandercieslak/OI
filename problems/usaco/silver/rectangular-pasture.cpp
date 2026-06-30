@@ -29,7 +29,7 @@ void solve() {
     }
     for (int i = 1; i <= numberOfCows; i++) {
         for (int j = 1; j <= numberOfCows; j++) {
-            prefix[i][j] += prefix[i-1][j] + prefix[i][j-1] - prefix[i-1][j-1];
+            prefix[i][j] = position[i][j] + prefix[i-1][j] + prefix[i][j-1] - prefix[i-1][j-1];
         }
     }
     long long answer { 0 };
@@ -37,11 +37,14 @@ void solve() {
         for (int j = i; j < numberOfCows; j++) {
             int x1 { min(cows[i].first, cows[j].first)-1 };
             int x2 { max(cows[i].first, cows[j].first)-1 };
-            int rec1 { prefix[x1+1][j+1] - prefix[0][j+1] - prefix[x1+1][i] + prefix[0][i] };
-            int rec2 { prefix[numberOfCows-1+1][j+1] - prefix[x2][j+1] - prefix[numberOfCows-1+1][i] + prefix[x2][i] };
+            int y1 { i };
+            int y2 { j };
+            int rec1 { prefix[x1+1][y2+1] - prefix[0][y2+1] - prefix[x1+1][y1] + prefix[0][y1] };
+            int rec2 { prefix[numberOfCows-1+1][y2+1] - prefix[x2][y2+1] - prefix[numberOfCows-1+1][y1] + prefix[x2][y1] };
             answer += rec1 * rec2;
         }
     }
+    answer++;
     cout << answer << "\n";
 }
 
