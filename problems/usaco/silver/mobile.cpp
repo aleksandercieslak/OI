@@ -2,21 +2,19 @@
 using namespace std;
 
 bool valid(int highwayLength, vector<pair<int, int>> stations, double radius) {
-    vector<pair<double, double>> indices;
+    double current { 0 };
     for (auto a : stations) {
         double distance { pow(pow(radius, 2) - pow(static_cast<double>(a.second), 2), 0.5) };
-        indices.push_back({static_cast<double>(a.first)-distance, static_cast<double>(a.first)+distance});
-    } 
-    sort(indices.begin(), indices.end(), [](pair<double, double> a, pair<double, double> b) { return a.first < b.first; });
-    if (indices[0].first > 0) { return false; }
-    int l { static_cast<int>(indices.size()) };
-    if (indices[l-1].second < highwayLength) { return false; }
-    for (int i = 1; i < l; i++) {
-        if (indices[i].first > indices[i-1].second) {
-            return false;
+        double pointLeft { a.first-distance };
+        double pointRight { a.first+distance };
+        if (pointLeft <= current) {
+            current = pointRight;
         }
     }
-    return true;
+    if (current >= highwayLength) {
+        return true;
+    }
+    return false;
 }
 
 void solve() {
