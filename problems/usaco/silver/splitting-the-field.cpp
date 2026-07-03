@@ -9,75 +9,78 @@ void solve() {
         cin >> cows[i].first >> cows[i].second;
     }
     int baseArea { 0 };
-    int left { 1000000000 };
-    int right { 0 };
-    int bottom { 1000000000 };
-    int top { 0 };
+    int l { 1000000000 };
+    int r { 0 };
+    int b { 1000000000 };
+    int t { 0 };
     for (int i = 0; i < numberOfCows; i++) {
-        left = min(cows[i].first, left);
-        right = max(cows[i].first, right);
-        bottom = min(cows[i].second, bottom);
-        top = max(cows[i].second, top);
+        l = min(cows[i].first, l);
+        r = max(cows[i].first, r);
+        b = min(cows[i].second, b);
+        t = max(cows[i].second, t);
     }
-    baseArea = (right-left)*(top-bottom);
+    baseArea = (r-l)*(t-b);
+    struct Edge {
+        int left;
+        int right;
+        int bottom;
+        int top;
+    };
     sort(cows.begin(), cows.end(), [](pair<int, int> a, pair<int, int> b) { return a.first < b.first; });
-    int maxHorizontalGap { 0 };
-    int horizontalGapIndex { 0 };
+    vector<Edge> horizontalPrefix (numberOfCows);
+    horizontalPrefix[0].left = cows[0].first;
+    horizontalPrefix[0].right = cows[0].first;
+    horizontalPrefix[0].bottom = cows[0].second;
+    horizontalPrefix[0].top = cows[0].second;
     for (int i = 1; i < numberOfCows; i++) {
-        if (cows[i].first-cows[i-1].first+abs(cows[i].second-cows[i-1].second) > maxHorizontalGap) {
-            maxHorizontalGap = cows[i].first-cows[i-1].first+abs(cows[i].second-cows[i-1].second);
-            horizontalGapIndex = i;
-        }
+        horizontalPrefix[i].left = min(cows[i].first, horizontalPrefix[i-1].left);
+        horizontalPrefix[i].right = max(cows[i].first, horizontalPrefix[i-1].right);
+        horizontalPrefix[i].bottom = min(cows[i].second, horizontalPrefix[i-1].bottom);
+        horizontalPrefix[i].top = max(cows[i].second, horizontalPrefix[i-1].top);
+    }
+    vector<Edge> horizontalSuffix (numberOfCows);
+    horizontalSuffix[numberOfCows-1].left = cows[numberOfCows-1].first;
+    horizontalSuffix[numberOfCows-1].right = cows[numberOfCows-1].first;
+    horizontalSuffix[numberOfCows-1].bottom = cows[numberOfCows-1].second;
+    horizontalSuffix[numberOfCows-1].top = cows[numberOfCows-1].second;
+    for (int i = numberOfCows-2; i >= 0; i--) {
+        horizontalSuffix[i].left = min(cows[i].first, horizontalSuffix[i+1].left);
+        horizontalSuffix[i].right = max(cows[i].first, horizontalSuffix[i+1].right);
+        horizontalSuffix[i].bottom = min(cows[i].second, horizontalSuffix[i+1].bottom);
+        horizontalSuffix[i].top = max(cows[i].second, horizontalSuffix[i+1].top);
     }
     sort(cows.begin(), cows.end(), [](pair<int, int> a, pair<int, int> b) { return a.second < b.second; });
-    int maxVerticalGap { 0 };
-    int verticalGapIndex { 0 };
+    vector<Edge> verticalPrefix (numberOfCows);
+    verticalPrefix[0].left = cows[0].first;
+    verticalPrefix[0].right = cows[0].first;
+    verticalPrefix[0].bottom = cows[0].second;
+    verticalPrefix[0].top = cows[0].second;
     for (int i = 1; i < numberOfCows; i++) {
-        if (cows[i].second-cows[i-1].second+abs(cows[i].first-cows[i-1].first) > maxVerticalGap) {
-            maxVerticalGap = cows[i].second-cows[i-1].second+abs(cows[i].first-cows[i-1].first);
-            verticalGapIndex = i;
-        }
+        verticalPrefix[i].left = min(cows[i].first, verticalPrefix[i-1].left);
+        verticalPrefix[i].right = max(cows[i].first, verticalPrefix[i-1].right);
+        verticalPrefix[i].bottom = min(cows[i].second, verticalPrefix[i-1].bottom);
+        verticalPrefix[i].top = max(cows[i].second, verticalPrefix[i-1].top);
     }
-    int l1 { 1000000000 };
-    int r1 { 0 };
-    int b1 { 1000000000 };
-    int t1 { 0 };
-    int l2 { 1000000000 };
-    int r2 { 0 };
-    int b2 { 1000000000 };
-    int t2 { 0 };
-    if (maxHorizontalGap > maxVerticalGap) {
-        sort(cows.begin(), cows.end(), [](pair<int, int> a, pair<int, int> b) { return a.first < b.first; });
-        for (int i = 0; i < horizontalGapIndex; i++) {
-            l1 = min(l1, cows[i].first);
-            r1 = max(r1, cows[i].first);
-            b1 = min(b1, cows[i].second);
-            t1 = max(t1, cows[i].second);
-        }
-        for (int i = horizontalGapIndex; i < numberOfCows; i++) {
-            l2 = min(l2, cows[i].first);
-            r2 = max(r2, cows[i].first);
-            b2 = min(b2, cows[i].second);
-            t2 = max(t2, cows[i].second);
-        }
+    vector<Edge> verticalSuffix (numberOfCows);
+    verticalSuffix[numberOfCows-1].left = cows[numberOfCows-1].first;
+    verticalSuffix[numberOfCows-1].right = cows[numberOfCows-1].first;
+    verticalSuffix[numberOfCows-1].bottom = cows[numberOfCows-1].second;
+    verticalSuffix[numberOfCows-1].top = cows[numberOfCows-1].second;
+    for (int i = numberOfCows-2; i >= 0; i--) {
+        verticalSuffix[i].left = min(cows[i].first, verticalSuffix[i+1].left);
+        verticalSuffix[i].right = max(cows[i].first, verticalSuffix[i+1].right);
+        verticalSuffix[i].bottom = min(cows[i].second, verticalSuffix[i+1].bottom);
+        verticalSuffix[i].top = max(cows[i].second, verticalSuffix[i+1].top);
     }
-    else {
-        sort(cows.begin(), cows.end(), [](pair<int, int> a, pair<int, int> b) { return a.second < b.second; });
-        for (int i = 0; i < verticalGapIndex; i++) {
-            l1 = min(l1, cows[i].first);
-            r1 = max(r1, cows[i].first);
-            b1 = min(b1, cows[i].second);
-            t1 = max(t1, cows[i].second);
-        }
-        for (int i = verticalGapIndex; i < numberOfCows; i++) {
-            l2 = min(l2, cows[i].first);
-            r2 = max(r2, cows[i].first);
-            b2 = min(b2, cows[i].second);
-            t2 = max(t2, cows[i].second);
-        }
+    int newArea { baseArea };
+    for (int i = 1; i < numberOfCows; i++) {
+        int leftArea { (horizontalPrefix[i-1].top-horizontalPrefix[i-1].bottom)*(horizontalPrefix[i-1].right-horizontalPrefix[i-1].left) };
+        int rightArea { (horizontalSuffix[i].top-horizontalSuffix[i].bottom)*(horizontalSuffix[i].right-horizontalSuffix[i].left) };
+        int bottomArea { (verticalPrefix[i-1].top-verticalPrefix[i-1].bottom)*(verticalPrefix[i-1].right-verticalPrefix[i-1].left) };
+        int topArea { (verticalSuffix[i].top-verticalSuffix[i].bottom)*(verticalSuffix[i].right-verticalSuffix[i].left) };
+        newArea = min(newArea, min(leftArea+rightArea, bottomArea+topArea));
     }
-    int newArea { (r1-l1)*(t1-b1) + (r2-l2)*(t2-b2) };
-    cout << baseArea-newArea << "\n";
+    cout << baseArea - newArea << "\n";
 }
 
 int main() {
