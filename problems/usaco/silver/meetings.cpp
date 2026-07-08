@@ -52,16 +52,16 @@ void solve() {
         if (sum >= weightTreshold) { break; }
     }
     int answer { 0 };
-    vector<int> leftPos;
+    vector<int> rightPos;
     for (int i = 0; i < numberOfCows; i++) {
         if (cows[i].direction == 1) {
-            leftPos.push_back(cows[i].position);
+            rightPos.push_back(cows[i].position);
         }
         else {
-            while (leftPos.size() > 0 && leftPos[0] + 2 * timeTreshold < cows[i].position) {
-                leftPos.erase(leftPos.begin());
+            while (rightPos.size() > 0 && rightPos[0] + timeTreshold < cows[i].position - timeTreshold) {
+                rightPos.erase(rightPos.begin());
             }
-            answer += leftPos.size();
+            answer += rightPos.size();
         }
     }
     cout << answer << "\n";
