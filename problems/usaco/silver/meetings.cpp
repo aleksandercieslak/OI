@@ -2,72 +2,76 @@
 using namespace std;
 
 void solve() {
-    int barn { 0 };
     int numberOfCows { 0 };
+    int barn { 0 };
     cin >> numberOfCows >> barn;
     struct Info {
         int weight;
         int position;
         int direction;
-        int time;
     };
     vector<Info> cows (numberOfCows);
-    int totalWeight { 0 };
     for (auto& a : cows) {
         cin >> a.weight >> a.position >> a.direction;
-        totalWeight += a.weight;
     }
-    double weightTreshold { static_cast<double>(totalWeight)/static_cast<double>(2) };
-    vector<Info> stats;
-    sort(cows.begin(), cows.end(), [](const Info& a, const Info& b) { return a.position < b.position; });
-    int counterLeft { -1 };
-    int counterRight { -1 };
+    sort(cows.begin(), cows.end(), [](const auto& a, const auto& b) { return a.position < b.position; });
+    float weightThreshold { 0 };
+    for (const auto& a : cows) {
+        weightThreshold += a.weight;
+    }
+    weightThreshold /= 2;
+    int tempIndex { -1 };
+    vector<pair<int, int>> finish;
     for (int i = 0; i < numberOfCows; i++) {
         if (cows[i].direction == -1) {
-            counterLeft++;
-            Info temp;
-            temp.time = i;
-            temp.weight = cows[counterLeft].weight;
-            temp.position = cows[i].position;
-            temp.direction = cows[i].direction;
-            stats.push_back(temp);
-        }
-        int j { numberOfCows-1-i };
-        if (cows[j].direction == 1) {
-            counterRight++;
-            Info temp;
-            temp.time = i;
-            temp.weight = cows[numberOfCows-1-counterRight].weight;
-            temp.position = cows[j].position;
-            temp.direction = cows[j].direction;
-            stats.push_back(temp);
+            tempIndex++;
+            finish.push_back({cows[tempIndex].weight, cows[i].position});
         }
     }
-    sort(stats.begin(), stats.end(), [](const Info& a, const Info& b) { return a.time < b.time; });
-    int timeTreshold { 0 };
-    int sum { 0 };
-    for (int i = 0; i < numberOfCows; i++) {
-        timeTreshold = stats[i].time;
-        sum += stats[i].weight;
-        if (sum >= weightTreshold) { break; }
-    }
-    int answer { 0 };
-    vector<int> rightPos;
-    for (int i = 0; i < numberOfCows; i++) {
+    tempIndex = numberOfCows;
+    for (int i = numberOfCows-1; i >= 0; i--) {
         if (cows[i].direction == 1) {
-            rightPos.push_back(cows[i].position);
+            tempIndex--;
+            finish.push_back({cows[tempIndex].weight, barn-cows[i].position});
+        }
+    }
+    sort(finish.begin(), finish.end(), [](const auto& a, const auto& b) { return a.second < b.second; });
+    int timeThreshold { 0 };
+    int w { 0 };
+    for (const auto& a : finish) {
+        timeThreshold = a.second;
+        w += a.first;
+        if (w >= weightThreshold) { break; }
+    }
+    int left { 0 };
+    int right { 0 };
+    int between { 0 };
+    int answer { 0 };
+    while (left != numberOfCows-1) {
+        if (cows[left].direction == 1) {
+            while (right != numberOfCows-1 && static_cast<float>(cows[right+1].position-cows[left].position)/2 <= timeThreshold) {
+                right++;
+                if (cows[right].direction == -1) {
+                    between++;
+                }
+            } 
+            answer += between;
+            left++;
         }
         else {
-            while (rightPos.size() > 0 && rightPos[0] + timeTreshold < cows[i].position - timeTreshold) {
-                rightPos.erase(rightPos.begin());
+            if (cows[left].direction == -1) {
+                between--;
             }
-            answer += rightPos.size();
+            left++;
         }
     }
     cout << answer << "\n";
 }
 
 int main() {
-    cin.tie(0)->sync_with_stdio(0);
+    ios_base::sync_with_stdio(false);
+    cin.tie(NULL);
+
     solve();
+    return 0;
 }
