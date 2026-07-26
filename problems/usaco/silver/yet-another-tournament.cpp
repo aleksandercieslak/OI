@@ -13,56 +13,43 @@ void solve() {
     for (int i = 0; i < numberOfOpponents; i++) {
         sorted[i].first = oppontents[i];
         sorted[i].second = i;
-    }
+    } 
     sort(sorted.begin(), sorted.end());
     int wins { 0 };
+    int biggestCost { 0 };
     vector<bool> beaten (numberOfOpponents);
     for (int i = 0; i < numberOfOpponents; i++) {
         if (time >= sorted[i].first) {
-            if (i < numberOfOpponents-1 && time - sorted[i].first < sorted[i+1].first && time >= sorted[i+1].first) {
-                int bestIndex { 0 };
-                int bestPlacement { 0 };
-                for (int j = i; j < numberOfOpponents; j++) {
-                    if (sorted[j].second >= bestPlacement && time >= sorted[j].first) {
-                        bestIndex = j;
-                        bestPlacement = sorted[j].second;
-                    }
-                    if (time < sorted[j].first) {
-                        beaten[bestIndex] = true;
-                        wins++;
-                        time -= sorted[bestIndex].first;
-                        break;
-                    }
-                }
-            }
-            else {
-                wins++;
-                time -= sorted[i].first;
-                beaten[i] = true;
-            }
+            time -= sorted[i].first;
+            wins++;
+            biggestCost = sorted[i].first;
+            beaten[sorted[i].second] = true;
         }
         else {
             break;
         }
     }
     vector<int> victories (numberOfOpponents);
-    for (int i = 0; i < numberOfOpponents; i++) {
-        victories[i] += sorted[i].second;
-        if (!beaten[i]) {
-            victories[i]++;
-        }
+    if (wins < numberOfOpponents && time + biggestCost >= oppontents[wins] && !beaten[wins]) {
+        victories[wins]--;
+        victories[sorted[wins-1].second]++;
     }
-    sort(victories.begin(), victories.end(), [](const int& a, const int& b) { return a > b;});
-    int moreWins { 0 };
-    for (const int& a : victories) {
-        if (a > wins) {
-            moreWins++;
+    for (int i = 0; i < wins; i++) {
+        victories[sorted[i].second]--;
+    }
+    for (int i = 0; i < numberOfOpponents; i++) {
+        victories[i] += i+1;
+    }
+    int answer { 0 };
+    for (int i = numberOfOpponents-1; i >= 0; i--) {
+        if (victories[i] > wins) {
+            answer++;
         }
         else {
             break;
         }
     }
-    cout << moreWins+1 << "\n";
+    cout << answer+1 << "\n";
 }
 
 int main() {
