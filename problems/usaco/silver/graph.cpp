@@ -13,74 +13,92 @@ void solve() {
         adj[b-1].push_back({c, a-1});
     }
     vector<bool> visited (n);
+    vector<int> sign (n); 
+    vector<int> add (n);
     vector<double> val (n);
-    bool ok { true };
+    bool possible { true };
     for (int i = 0; i < n; i++) {
         if (visited[i]) { continue; }
-        double best { INT_MAX };
-        double starter { 0 };
-        int fails { 0 };
-        for (double v = -2; v <= 2; v+=0.5) {
-            vector<bool> visited2 (n);
-            vector<double> val2 (n);
-            double total { 0 };
-            visited2[i] = true; 
-            val2[i] = v;
-            total += abs(v);
-            stack<int> dfsStack2;
-            dfsStack2.push(i);
-            bool possible { true };
-            while (!dfsStack2.empty()) {
-                int temp { dfsStack2.top() }; 
-                dfsStack2.pop();
-                for (const auto& a : adj[temp]) {
-                    if (visited2[a.second]) {
-                        if (val2[a.second] != a.first-val2[temp]) {
-                            possible = false; 
-                            fails++;
-                            break;
-                        }
-                        else { continue; }
-                    }
-                    else {
-                        dfsStack2.push(a.second);
-                        visited2[a.second] = true;
-                        val2[a.second] = a.first-val2[temp];
-                        total += abs(val2[a.second]);
-                    }
-                }
-                if (!possible) { break; }
-            }
-            if (!possible) { continue; }
-            if (total < best) {
-                best = total;
-                starter = v; 
-            }
-        }
-        visited[i] = true;  
+        vector<int> con;
+        visited[i] = true;
         stack<int> dfsStack;
         dfsStack.push(i);
-        val[i] = starter;
+        con.push_back(i);
+        sign[i] = 1;
+        add[i] = 0;
+        bool sf { false };
+        double s { 0 };
         while (!dfsStack.empty()) {
             int t { dfsStack.top() }; 
             dfsStack.pop();
             for (const auto& a : adj[t]) {
-                if (visited[a.second]) { continue; }
-                visited[a.second] = true;
+                if (visited[a.second]) {
+                    if (sign[a.second] != sign[t]) {
+                        if (add[a.second] + add[t] != a.first) {
+                            possible = false;
+                        }
+                    } 
+                    else {
+                        double f { (static_cast<double>(a.first-add[a.second]-add[t]))/(sign[a.second]+sign[t]) };
+                        if (sf && s != f) { possible = false; }
+                        else {
+                            sf = true;
+                            s = f;
+                        }
+                    }
+                    continue;
+                }
+                sign[a.second] = -1 * sign[t]; 
+                add[a.second] = a.first - add[t];
                 dfsStack.push(a.second);
-                val[a.second] = a.first-val[t];
+                visited[a.second] = true;
+                con.push_back(a.second);
             }
         }
-        if (fails == 9) { ok = false; }
+        for (int& a : con) {
+            if (sign[a] == -1) {
+                a = add[a];
+            }
+            else {
+                a = -1 * add[a];
+            }
+        }  
+        nth_element(con.begin(), con.begin() + con.size()/2, con.end());
+        int v { con[con.size()/2] };
+        if (sf) {
+            val[i] = s;
+        }
+        else {
+            val[i] = v;
+        }
     }
-    if (ok == false) {
-        cout << "NO" << "\n";
-    }
+    if (!possible) { cout << "NO" << "\n"; }
     else {
+        vector<bool> vis (n); 
+        for (int i = 0; i < n; i++) {
+            if (vis[i]) { continue; }
+            vis[i] = true;
+            stack<int> st;
+            st.push(i);
+            while (!st.empty()) {
+                int tp { st.top() }; 
+                st.pop();
+                for (const auto& a : adj[tp]) {
+                    if (vis[a.second]) { continue; }
+                    st.push(a.second);
+                    vis[a.second] = true;
+                    val[a.second] = a.first-val[tp];
+                }
+            }
+        }
         cout << "YES" << "\n";
         for (int i = 0; i < n; i++) {
-            if (i < n-1) { cout << val[i] << " "; }
-            else { cout << val[i] << "\n"; }
+            if (i < n-1) {
+                cout << val[i] << " ";
+            }
+            else {
+                cout << val[i] << "\n";
+            }
         }
     }
 }
